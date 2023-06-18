@@ -1,18 +1,12 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
-import { nanoid } from 'nanoid';
-import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
-import { getContacts } from 'redux/selectors';
-import { addElement } from 'redux/contactsSlise';
 import { FormPhonebook, Label, Input, Btn } from './ContactForm.styled';
 
-export const Form = () => {
+export const Form = ({ onSubmit }) => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
+  const [phone, setPhone] = useState('');
 
   const handleInputChange = event => {
     const { name, value } = event.target;
@@ -21,50 +15,21 @@ export const Form = () => {
       case 'name':
         setName(value);
         break;
-      case 'number':
-        setNumber(value);
+      case 'phone':
+        setPhone(value);
         break;
       default:
         return;
     }
   };
 
-  const addContact = (name, number) => {
-    const normalizedName = name.toLocaleLowerCase().trim();
-    const findName = contacts.find(
-      contact => contact.name.toLocaleLowerCase() === normalizedName
-    );
-
-    if (findName) {
-      toast.error(`${name} is already in the contacts`);
-      return;
-    }
-
-    const normalizedNumber = number.toLocaleLowerCase().trim();
-    const findNumber = contacts.find(
-      contact => contact.number.toLocaleLowerCase() === normalizedNumber
-    );
-
-    if (findNumber) {
-      toast.error(`${number} is already in the contacts`);
-      return;
-    }
-
-    const newContact = {
-      name,
-      number,
-      id: nanoid(),
-    };
-
-    dispatch(addElement(newContact));
-    setName('');
-    setNumber('');
-  };
-
   const handleSubmit = event => {
     event.preventDefault();
 
-    addContact(name, number);
+    onSubmit({ name, phone });
+
+    setName('');
+    setPhone('');
   };
 
   return (
@@ -85,8 +50,8 @@ export const Form = () => {
         Number
         <Input
           type="tel"
-          name="number"
-          value={number}
+          name="phone"
+          value={phone}
           onChange={handleInputChange}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
@@ -96,4 +61,8 @@ export const Form = () => {
       <Btn type="submit">Add contact</Btn>
     </FormPhonebook>
   );
+};
+
+Form.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
