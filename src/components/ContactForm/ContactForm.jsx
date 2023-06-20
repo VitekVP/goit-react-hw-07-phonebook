@@ -1,12 +1,18 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
-import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
+
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 
 import { FormPhonebook, Label, Input, Btn } from './ContactForm.styled';
 
-export const Form = ({ onSubmit }) => {
+export const Form = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const { items } = useSelector(selectContacts);
+  const dispatch = useDispatch();
 
   const handleInputChange = event => {
     const { name, value } = event.target;
@@ -23,13 +29,44 @@ export const Form = ({ onSubmit }) => {
     }
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    onSubmit({ name, phone });
-
+  const reset = () => {
     setName('');
     setPhone('');
+  };
+
+  const addContactFromForm = (name, phone) => {
+    const normalizedName = name.toLocaleLowerCase().trim();
+    const findName = items.find(
+      contact => contact.name.toLocaleLowerCase() === normalizedName
+    );
+
+    if (findName) {
+      toast.warning(`${name} is already in the contacts`);
+      return;
+    }
+
+    const normalizedNumber = phone;
+    const findNumber = items.find(
+      contact => contact.phone === normalizedNumber
+    );
+
+    if (findNumber) {
+      toast.warning(`${phone} is already in the contacts`);
+      return;
+    }
+
+    const newContact = {
+      name,
+      phone,
+    };
+
+    dispatch(addContact(newContact));
+    reset();
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    addContactFromForm(name, phone);
   };
 
   return (
@@ -61,8 +98,4 @@ export const Form = ({ onSubmit }) => {
       <Btn type="submit">Add contact</Btn>
     </FormPhonebook>
   );
-};
-
-Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };

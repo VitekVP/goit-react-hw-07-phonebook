@@ -35,7 +35,7 @@ export const Input = styled.input`
 `;
 
 export const Btn = styled.button`
-  width: 120px;
+  width: 130px;
   height: 30px;
   padding: 0;
 
@@ -49,7 +49,8 @@ export const Btn = styled.button`
   text-transform: uppercase;
 
   box-shadow: 0px 0px 6px 0px #000000bf;
-  border: 1px solid black;
+  /* border: 1px solid black; */
+  border: none;
   border-radius: 4px;
   cursor: pointer;
 

@@ -9,12 +9,16 @@ import { ListItem, Btn } from './ContactListItem.styled';
 export const ContactListItem = ({ id, name, number }) => {
   const dispatch = useDispatch();
 
+  const handleClikBtn = () => {
+    dispatch(deleteContact(id));
+  };
+
   return (
     <ListItem key={id}>
       <p>
         {name}: {number}
       </p>
-      <Btn type="button" onClick={() => dispatch(deleteContact(id))}>
+      <Btn type="button" onClick={handleClikBtn}>
         Delete
       </Btn>
     </ListItem>
